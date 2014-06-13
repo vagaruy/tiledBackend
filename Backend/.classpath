@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Documents/Eclipse/Backend/src/code/javax.json-api-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/artoolkitplus-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/ffmpeg-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/flycapture-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/javacpp.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/javacv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/libdc1394-macosx-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/libfreenect-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/opencv-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Testing/Desktop/javacv-bin/videoinput-windows-x86_64.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
