@@ -18,10 +18,13 @@ public class Sorter implements Runnable {
 	private final int port;
 	ObjectInputStream inStream = null;
 	ObjectOutputStream outStream = null;
+	Thread incThread;
+	Thread outThread;
 
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue;
 	private final ArrayBlockingQueue<TiledMessage> sharedQueueRev;
 	private final LinkedList<TileIndex> index;
+	private int flag;
 
 	Sorter(LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue,ArrayBlockingQueue<TiledMessage> sharedQueueRev, LinkedList<TileIndex> index,
 			int port) {
@@ -29,6 +32,7 @@ public class Sorter implements Runnable {
 		this.sharedQueueRev=sharedQueueRev;
 		this.index = index;
 		this.port = port;
+		flag=1;
 }
 
 	private void optitrack_sort() {
@@ -81,29 +85,47 @@ public class Sorter implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		frontend_sort();
 		
-		
-		SorterIncoming inc=new SorterIncoming(sock,inStream,sharedQueue,index);
-		SorterOutgoing out=new SorterOutgoing(sock,outStream,sharedQueueRev);
-		Thread incThread=new Thread(inc);
-		Thread outThread=new Thread(out);
-		incThread.start();
-		outThread.start();
 		while(true)
 		{
-			if(sock==null)
-				frontend_sort();
-			else
+			//if((sock == null) || (!sock.isConnected()))
+			//{
+			if(flag==1)
+			{
+				System.out.println("restarting all the threads yo");
+				if(incThread.isAlive())
+					incThread.interrupt();
+				if(outThread.isAlive())
+					outThread.interrupt();
+				start_threads();
+				flag=0;
+			}
+			
+				/*frontend_sort();
+				System.out.println("Socket connection failed in front end check....");*/
+			//}else
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(4000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					System.out.println("Sorter disturbed not cool bro!");
 					e.printStackTrace();
 				}
-		}
+				
+		}//
 
+	}
+
+	private void start_threads() {
+		// TODO Auto-generated method stub
+		frontend_sort();
+		SorterIncoming inc=new SorterIncoming(flag,sock,inStream,sharedQueue,index);
+		SorterOutgoing out=new SorterOutgoing(sock,outStream,sharedQueueRev);
+		incThread=new Thread(inc);
+		outThread=new Thread(out);
+		incThread.start();
+		outThread.start();
+		
 	}
 
 	/*public static void main(String args[]) {

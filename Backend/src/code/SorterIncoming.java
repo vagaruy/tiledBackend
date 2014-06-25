@@ -1,5 +1,6 @@
 package code;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Iterator;
@@ -14,15 +15,17 @@ public class SorterIncoming implements Runnable {
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue;
 	private final LinkedList<TileIndex> index;
 	private Socket sock;
+	private int flag;
 	Optitrack tracker;
 	Thread track;
 
-	public SorterIncoming(Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
+	public SorterIncoming(int flag,Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
 		// TODO Auto-generated constructor stub
 		this.inStream=inStream;
 		this.sharedQueue=sharedQueue;
 		this.index=index;
 		this.sock=sock;	
+		this.flag=flag;
 		
 	}
 	
@@ -85,7 +88,7 @@ public class SorterIncoming implements Runnable {
 	
 	private void recv_msg()
 	{
-		if(sock!=null)
+		if((sock != null) && (sock.isConnected()))
 		{
 		try {
 			TiledMessage message = null;
@@ -110,16 +113,24 @@ public class SorterIncoming implements Runnable {
 		
 		}catch(Exception ex)
 		{
-			ex.printStackTrace();
-			sock=null;
+			flag=1;
+			//ex.printStackTrace();
+			
+			//sock=null;
+			System.out.println("Socket nullified");
 		}
+		}
+		else
+		{
+			sock=null;
+			System.out.println("SOcket nullified");
 		}
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		System.out.println("my birth");
+		System.out.println("Sorter INcoming created!");
 		try{
 			while(true){
 				recv_msg();
@@ -128,6 +139,7 @@ public class SorterIncoming implements Runnable {
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
+			System.out.println("Was error caught here");
 		}
 		
 	}
