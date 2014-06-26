@@ -2,6 +2,7 @@ package code;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ public class SorterIncoming implements Runnable {
 	private AtomicBoolean flag;
 	Optitrack tracker;
 	Thread track;
+	
 
 	public SorterIncoming(AtomicBoolean flag,Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
 		// TODO Auto-generated constructor stub
@@ -27,6 +29,7 @@ public class SorterIncoming implements Runnable {
 		this.index=index;
 		this.sock=sock;	
 		this.flag=flag;
+		
 		
 	}
 	
@@ -72,10 +75,16 @@ public class SorterIncoming implements Runnable {
 				{
 					if(track.isAlive())
 					{
+						//if(socket!=null)
+						//{
+						tracker.shutdown();
+						//	socket.close();
+						//}
 						track.interrupt();
 						//track.stop();
+						track=null;
 					}
-					track=null;
+					
 				}
 			}
 		

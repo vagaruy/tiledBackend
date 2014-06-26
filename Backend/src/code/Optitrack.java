@@ -23,6 +23,7 @@ public class Optitrack implements Runnable {
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd;
 	private final LinkedList<TileIndex> index;
 	static int SerialNo[];
+	MulticastSocket s;
 
 	public Optitrack(
 			LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd,
@@ -30,7 +31,10 @@ public class Optitrack implements Runnable {
 		// TODO Auto-generated constructor stub
 		this.sharedQueueFwd = sharedQueueFwd;
 		this.index = index;
+		
 	}
+	
+	
 
 	/**
 	 * @param args
@@ -38,12 +42,21 @@ public class Optitrack implements Runnable {
 	 * @throws IOException 
 	 */
 
+	public void shutdown()
+	{
+		try{
+			s.close();
+		}catch(Exception e){
+			System.out.println("Multicast socket caught here");
+		}
+	}
+	
 	public void start_track() {
 		InetAddress group;
 		int major = 0;
 		byte[] buf = new byte[10000];
-		MulticastSocket s =null;
 		
+	
 			try {
 				group = InetAddress.getByName("239.255.42.99");
 				s = new MulticastSocket(1511);
@@ -70,6 +83,7 @@ public class Optitrack implements Runnable {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					
 				}
 				
 
