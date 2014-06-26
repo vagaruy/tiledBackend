@@ -1,5 +1,6 @@
 package code;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -29,16 +30,28 @@ public class SorterOutgoing implements Runnable {
 		{
 		
 				System.out.println("writing objects to stream yo");
-				try {
-					outStream.writeObject(sharedQueueRev.take());
-					outStream.flush();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					sock=null;
 				
+					
+						try {
+							outStream.writeObject(sharedQueueRev.take());
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							System.out.println("INterupted exception caught here");
+						    Thread.currentThread().interrupt();//preserve the message
+						    return;//Stop doing whatever I am doing and terminate
+							
+						}
+						try {
+							outStream.flush();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
 			
-		}
 		}
 	}
 
@@ -51,9 +64,11 @@ public class SorterOutgoing implements Runnable {
 				send_msg();
 				Thread.sleep(100);
 			}
-		}catch(Exception ex)
+		}catch(InterruptedException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("INterupted exception caught here");
+		    Thread.currentThread().interrupt();//preserve the message
+		    return;//Stop doing whatever I am doing and terminate
 		}
 		
 	}

@@ -34,28 +34,43 @@ public class Optitrack implements Runnable {
 
 	/**
 	 * @param args
+	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
 
-	public void start_track()  {
+	public void start_track() {
 		InetAddress group;
 		int major = 0;
 		byte[] buf = new byte[10000];
 		MulticastSocket s =null;
-		try{
-			group = InetAddress.getByName("239.255.42.99");
-			s = new MulticastSocket(1511);
-			s.joinGroup(group);
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
+		
+			try {
+				group = InetAddress.getByName("239.255.42.99");
+				s = new MulticastSocket(1511);
+				s.joinGroup(group);
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.out.println("Have we joined the multicast group yet or still waiting on it yo?");
 			while (true) {
 
 				// get their responses!
-				try {
+				if(Thread.currentThread().isInterrupted())
+				{
+					Thread.currentThread().interrupt();
+					return;
+				}
 				DatagramPacket recv = new DatagramPacket(buf, buf.length);
-				s.receive(recv);
+				try {
+					s.receive(recv);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 
 				// System.out.println(buf);
@@ -282,14 +297,11 @@ public class Optitrack implements Runnable {
 				}
 
 			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 			}
 	}
 
-	private  void find_tile(float[] x, float[] z, int nRigidBodies) {
+	private  void find_tile(float[] x, float[] z, int nRigidBodies)  {
 
 		
 		int serial[]=new int[nRigidBodies];
@@ -315,10 +327,10 @@ public class Optitrack implements Runnable {
 
 	}
 
-	private void send_msg() {
+	private void send_msg()  {
 		// TODO Auto-generated method stub
 		
-		try{
+		
 			TileIndex in;
 			TiledMessage tile=null;
 			Iterator<TileIndex> q = index.iterator();
@@ -353,22 +365,18 @@ public class Optitrack implements Runnable {
 				sharedQueueFwd.get(pos).add(tile);
 				pos++;
 			}
-			}catch(Exception ex){
-				System.out.println("Inside sort(TiledMessage) function.Nothing added yet!Index empty");
-			}
+			
 		
 	}
 
 	@Override
-	public void run() {
+	public void run()  {
 		// TODO Auto-generated method stub
-		try {
 			
-			start_track();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
+				start_track();
+			
+			
 
 	}
 

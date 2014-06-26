@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 
@@ -15,11 +16,11 @@ public class SorterIncoming implements Runnable {
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue;
 	private final LinkedList<TileIndex> index;
 	private Socket sock;
-	private int flag;
+	private AtomicBoolean flag;
 	Optitrack tracker;
 	Thread track;
 
-	public SorterIncoming(int flag,Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
+	public SorterIncoming(AtomicBoolean flag,Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
 		// TODO Auto-generated constructor stub
 		this.inStream=inStream;
 		this.sharedQueue=sharedQueue;
@@ -71,7 +72,8 @@ public class SorterIncoming implements Runnable {
 				{
 					if(track.isAlive())
 					{
-						track.stop();
+						track.interrupt();
+						//track.stop();
 					}
 					track=null;
 				}
@@ -108,18 +110,20 @@ public class SorterIncoming implements Runnable {
 					System.out.println("weird characters read");
 				}
 				
-			} 
-			
-		
-		}catch(Exception ex)
-		{
-			flag=1;
-			//ex.printStackTrace();
-			
+			}
+		}
+		 catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			flag.set(true);
 			//sock=null;
 			System.out.println("Socket nullified");
 		}
 		}
+
+		
 		else
 		{
 			sock=null;
@@ -136,10 +140,13 @@ public class SorterIncoming implements Runnable {
 				recv_msg();
 				Thread.sleep(500);
 			}
-		}catch(Exception ex)
+		}catch(InterruptedException ex)
 		{
-			ex.printStackTrace();
-			System.out.println("Was error caught here");
+		System.out.println("INterupted exception caught here");
+	    Thread.currentThread().interrupt();//preserve the message
+	    return;//Stop doing whatever I am doing and terminate
+			
+			
 		}
 		
 	}

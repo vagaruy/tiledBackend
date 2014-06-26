@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Sorter implements Runnable {
 
@@ -24,7 +25,7 @@ public class Sorter implements Runnable {
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue;
 	private final ArrayBlockingQueue<TiledMessage> sharedQueueRev;
 	private final LinkedList<TileIndex> index;
-	private int flag;
+	private AtomicBoolean flag;
 
 	Sorter(LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue,ArrayBlockingQueue<TiledMessage> sharedQueueRev, LinkedList<TileIndex> index,
 			int port) {
@@ -32,7 +33,10 @@ public class Sorter implements Runnable {
 		this.sharedQueueRev=sharedQueueRev;
 		this.index = index;
 		this.port = port;
-		flag=1;
+		flag=new AtomicBoolean();
+		flag.set(true);
+		incThread=null;
+		outThread=null;
 }
 
 	private void optitrack_sort() {
@@ -42,6 +46,7 @@ public class Sorter implements Runnable {
 	private void frontend_sort() {
 
 		System.out.println("frontend sorter up and running yo");
+		sock=null;
 		if ((sock == null) || (!sock.isConnected())) {
 				System.out.println("Socket got dead");
 
@@ -85,20 +90,34 @@ public class Sorter implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		
+		System.out.println("Sorter thread birth");
 		while(true)
 		{
 			//if((sock == null) || (!sock.isConnected()))
 			//{
-			if(flag==1)
+			if(flag.get())
 			{
 				System.out.println("restarting all the threads yo");
-				if(incThread.isAlive())
+				if(incThread==null)
+				{
+				
+				}
+				else if(incThread.isAlive())
+				{
 					incThread.interrupt();
-				if(outThread.isAlive())
-					outThread.interrupt();
+					//incThread.stop();
+				}
+				if(outThread==null)
+				{
+				
+				}
+				else if(outThread.isAlive())
+				{
+				outThread.interrupt();
+				//outThread.stop();
+				}
 				start_threads();
-				flag=0;
+				flag.set(false);
 			}
 			
 				/*frontend_sort();
