@@ -1,8 +1,6 @@
 package code;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;

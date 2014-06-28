@@ -1,9 +1,5 @@
 package code;
 import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_highgui.*;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.bytedeco.javacv.*;
@@ -24,11 +20,7 @@ public class webcam implements Runnable {
 		//{
 		try {
 			FrameGrabber grabber = FrameGrabber.createDefault(0); 
-
-			int i=0;
-
 			grabber.start();
-
 			IplImage img;//=cvLoadImage("C:\\Users\\Testing\\Desktop\\image.jpg");
 			// while (true) {
 			img = grabber.grab();

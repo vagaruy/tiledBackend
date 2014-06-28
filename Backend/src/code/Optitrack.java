@@ -8,8 +8,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -99,15 +97,15 @@ public class Optitrack implements Runnable {
 			//	 System.out.println("Message ID :"+ MessageID);
 				ptr += 2;
 				// size
-				int nBytes = 0;
-				nBytes = (short) (((buf[ptr + 1] & 0xFF) << 8) | (buf[ptr] & 0xFF));
+				/*int nBytes = 0;
+				nBytes = (short) (((buf[ptr + 1] & 0xFF) << 8) | (buf[ptr] & 0xFF));*/
 				ptr += 2;
 				// System.out.println("Byte count :"+ nBytes);
 				if (MessageID == 7) {
-					int frameNumber = 0;
+					/*int frameNumber = 0;
 					frameNumber = buf[ptr + 3] << 24
 							| (buf[ptr + 2] & 0xFF) << 16
-							| (buf[ptr + 1] & 0xFF) << 8 | (buf[ptr] & 0xFF);
+							| (buf[ptr + 1] & 0xFF) << 8 | (buf[ptr] & 0xFF);*/
 					ptr += 4;
 					// System.out.println("Frame Number is "+frameNumber);
 					// number of data sets (markersets, rigidbodies, etc)
@@ -136,25 +134,25 @@ public class Optitrack implements Runnable {
 						// System.out.println("Marker Count : "+ nMarkers);
 
 						for (int j = 0; j < nMarkers; j++) {
-							float x = 0;
+							/*float x = 0;
 							x = Float.intBitsToFloat(buf[ptr + 3] << 24
 									| (buf[ptr + 2] & 0xFF) << 16
 									| (buf[ptr + 1] & 0xFF) << 8
 									| (buf[ptr] & 0xFF));
-
+*/
 							ptr += 4;
-							float y = 0;
+/*							float y = 0;
 							y = Float.intBitsToFloat(buf[ptr + 3] << 24
 									| (buf[ptr + 2] & 0xFF) << 16
 									| (buf[ptr + 1] & 0xFF) << 8
 									| (buf[ptr] & 0xFF));
-							ptr += 4;
-							float z = 0;
+*/							ptr += 4;
+/*							float z = 0;
 							z = Float.intBitsToFloat(buf[ptr + 3] << 24
 									| (buf[ptr + 2] & 0xFF) << 16
 									| (buf[ptr + 1] & 0xFF) << 8
 									| (buf[ptr] & 0xFF));
-							ptr += 4;
+*/							ptr += 4;
 							// System.out.println("Marker Number="+j+" X="+x+" Y="+y+" Z="+z);
 						}
 					}
@@ -168,24 +166,24 @@ public class Optitrack implements Runnable {
 					// System.out.println("Unidentified Marker Count : "+
 					// nOtherMarkers);
 					for (int j = 0; j < nOtherMarkers; j++) {
-						float x = 0;
+						/*float x = 0;
 						x = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
-						float y = 0;
+						*/ptr += 4;
+						/*float y = 0;
 						y = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
-						float z = 0;
+						*/ptr += 4;
+						/*float z = 0;
 						z = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
+						*/ptr += 4;
 						// System.out.println("Marker Number="+j+" X="+x+" Y="+y+" Z="+z);
 					}
 					// rigid bodies
@@ -200,53 +198,53 @@ public class Optitrack implements Runnable {
 			//	 System.out.println("Rigid Body Count :"+ nRigidBodies);
 					for (int j = 0; j < nRigidBodies; j++) {
 						// rigid body pos/ori
-						int ID = 0;
+						/*int ID = 0;
 						ID = buf[ptr + 3] << 24 | (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF);
-						ptr += 4;
+						*/ptr += 4;
 						//float x = 0;
 						x[j] = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
 						ptr += 4;
-						float y = 0;
+						/*float y = 0;
 						y = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
+						*/ptr += 4;
 						//float z = 0;
 						z[j] = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
 						ptr += 4;
-						float qx = 0;
+						/*float qx = 0;
 						qx = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
-						float qy = 0;
+						*/ptr += 4;
+						/*float qy = 0;
 						qy = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
-						float qz = 0;
+						*/ptr += 4;
+						/*float qz = 0;
 						qz = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
-						float qw = 0;
+						*/ptr += 4;
+						/*float qw = 0;
 						qw = Float.intBitsToFloat(buf[ptr + 3] << 24
 								| (buf[ptr + 2] & 0xFF) << 16
 								| (buf[ptr + 1] & 0xFF) << 8
 								| (buf[ptr] & 0xFF));
-						ptr += 4;
+						*/ptr += 4;
 					//System.out.println("ID : "+ ID);
 						
 					// System.out.println("pos:X="+ x+" Y="+y+" Z="+z);
@@ -349,7 +347,6 @@ public class Optitrack implements Runnable {
 			TiledMessage tile=null;
 			Iterator<TileIndex> q = index.iterator();
 			int pos = 0;
-			boolean success = false;
 			while (q.hasNext()) {
 				in = (TileIndex) q.next();
 				int flag=0;

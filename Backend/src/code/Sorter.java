@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,10 +37,6 @@ public class Sorter implements Runnable {
 		incThread=null;
 		outThread=null;
 }
-
-	private void optitrack_sort() {
-
-	}
 
 	private void frontend_sort() {
 

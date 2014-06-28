@@ -18,10 +18,6 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.xml.bind.DatatypeConverter;
 
 public class Scanner implements Runnable {
 	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd; // Playing with thread

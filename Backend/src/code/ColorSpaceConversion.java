@@ -33,7 +33,6 @@ public class ColorSpaceConversion {
 	 
 	// Example function.
 	colorRgbw rgbToRgbw( int red, int green,  int blue) {
-	     int white = 0;
 	    colorRgbw rgbw = new colorRgbw();
 	    rgbw.red=red;
 	    rgbw.green=green;
@@ -46,7 +45,7 @@ public class ColorSpaceConversion {
 	colorRgbw rgbToRgbw( int red, int redMax,
 	                     int green,  int greenMax,
 	                     int blue,  int blueMax) {
-	     int white = 0;
+	     
 	     colorRgbw rgbw = new colorRgbw();
 	     rgbw.red=red;
 		    rgbw.green=green;
