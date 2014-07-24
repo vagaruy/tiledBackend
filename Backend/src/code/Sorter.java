@@ -15,7 +15,7 @@ public class Sorter implements Runnable {
 
 	private ServerSocket listener=null;
 	private Socket sock=null;
-	private final int port;
+	private final int port; 
 	ObjectInputStream inStream = null;
 	ObjectOutputStream outStream = null;
 	Thread incThread;

@@ -16,13 +16,28 @@ import java.util.concurrent.ArrayBlockingQueue;
 /**
  * @author Testing
  * 
+ * This class is an implementation of the OPtirtrack system.The class runs as a seperate thread when the 
+ * user clicks on the OPtitrack On button in the frontend.When the user clicks on it again, the class destroys itself and the 
+ * tiles are initialized to their default state.
+ * 
+ * The main functions in this class are shutdown(), start_track(), find_tile() and send_message()
+ * 
  */
 public class Optitrack implements Runnable {
-	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd;
+	
+	//sharedQueueFwd which contains the list of all the tiles and their seperate queues to send the message to
+	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd;	
+	
+	//index contains teh position of each tile in the queue
 	private final LinkedList<TileIndex> index;
+	
+	//contains the currently active tiles SerialNos
 	static int SerialNo[];
+	
+	//The multicast socket for connecting with the Optitrack will be stored here
 	MulticastSocket s;
 
+	//Constructor to initialize all the variables.
 	public Optitrack(
 			LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd,
 			LinkedList<TileIndex> index) {
@@ -35,11 +50,11 @@ public class Optitrack implements Runnable {
 	
 
 	/**
-	 * @param args
+	 * @param none
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
-
+//close and release the socket when the thread is destroyed!
 	public void shutdown()
 	{
 		try{
@@ -49,14 +64,18 @@ public class Optitrack implements Runnable {
 		}
 	}
 	
+	
+	//Create a connection with the OPtitrack system and process the recieved datagram packets to find the rigid objects and their marker locations!
+	//Interrupts when a thread interrupt message is recieved!
 	public void start_track() {
 		InetAddress group;
 		int major = 0;
+		
 		byte[] buf = new byte[10000];
 		
-	
+		//Join the multicast group!
 			try {
-				group = InetAddress.getByName("239.255.42.99");
+				group = InetAddress.getByName("239.255.42.99");	
 				s = new MulticastSocket(1511);
 				s.joinGroup(group);
 			} catch (UnknownHostException e1) {
@@ -66,15 +85,20 @@ public class Optitrack implements Runnable {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			System.out.println("Have we joined the multicast group yet or still waiting on it yo?");
+			System.out.println("Joined the multicast group.Now start recieving the datapackets!");
+			
+			//continue processing the datagram packets till the thread is interrupted
 			while (true) {
 
-				// get their responses!
+				// THread interruptiion code..Process the interrupted message!
 				if(Thread.currentThread().isInterrupted())
 				{
+					shutdown();
 					Thread.currentThread().interrupt();
 					return;
 				}
+				
+				//Recieve the datagrampackets here
 				DatagramPacket recv = new DatagramPacket(buf, buf.length);
 				try {
 					s.receive(recv);
@@ -84,7 +108,7 @@ public class Optitrack implements Runnable {
 					
 				}
 				
-
+				//Packet processing begins here
 				// System.out.println(buf);
 				// System.out.println("Begin Packet-----");
 
@@ -303,7 +327,9 @@ public class Optitrack implements Runnable {
 							}
 						}
 
-					} // next rigid body
+					} // 
+					
+					//get the tiles to be active relative to their position
 					find_tile(x,z,nRigidBodies);
 
 				}
@@ -313,13 +339,16 @@ public class Optitrack implements Runnable {
 			}
 	}
 
+	
+	//find the tiles which needs to be activated and deactiveated and send them to the respective queue
 	private  void find_tile(float[] x, float[] z, int nRigidBodies)  {
 
 		
 		int serial[]=new int[nRigidBodies];
 		for(int i=0;i<nRigidBodies;i++)
 		{
-		// TODO Auto-generated method stub
+		// Check for the loaction of each tile to find which one should be switched on...Extend it to include values from all tiles!
+		//currently only supports 4
 		if ((x[i] > -1) && (x[i] < 0) && (z[i] > 0.5) && (z[i] < 1.5))
 			serial[i] = 1;
 		else if ((x[i] > -2) && (x[i] < -1) && (z[i] > 0.5) && (z[i] < 1.5))
@@ -329,6 +358,8 @@ public class Optitrack implements Runnable {
 		else if ((x[i] > -2) && (x[i] < -1) && (z[i] < 0.5) && (z[i] > -1.5))
 			serial[i] = 4;
 		}
+		
+		//only send messages to the tiles if the state of any tiles have changed since the last time otherwise skip this step.
 		if(!Arrays.equals(SerialNo,serial))
 		{
 			SerialNo=serial.clone();
@@ -338,9 +369,10 @@ public class Optitrack implements Runnable {
 		
 
 	}
-
+	
+	//Send message to each tile to change their state!
 	private void send_msg()  {
-		// TODO Auto-generated method stub
+		// 
 		
 		
 			TileIndex in;
@@ -352,6 +384,7 @@ public class Optitrack implements Runnable {
 				int flag=0;
 				for(int i=0;i<SerialNo.length;i++)
 				{
+				//If SerialNo is present in the array, then switch the tile on
 				if (in.SerialNo == SerialNo[i]) {
 					tile=new TiledMessage((byte)in.SerialNo);
 					tile.setMessagetype((byte) 7);
@@ -364,6 +397,8 @@ public class Optitrack implements Runnable {
 					flag=1;
 				}
 				}
+				
+				//SerialNo not present.Switch the tile off!
 				if(flag==1)
 				{
 					tile=new TiledMessage((byte)in.SerialNo);
@@ -379,10 +414,11 @@ public class Optitrack implements Runnable {
 			
 		
 	}
-
+	
+	
 	@Override
 	public void run()  {
-		// TODO Auto-generated method stub
+		// Run the start_track method which is self contained!
 			
 			
 				start_track();

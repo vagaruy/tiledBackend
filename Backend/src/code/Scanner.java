@@ -20,7 +20,13 @@ import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class Scanner implements Runnable {
-	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd; // Playing with thread
+	
+	// Linked List of the queues of tiles..Initially contains nothing but after the tiles are discovered 
+	//they will be added to the queue.
+	private final LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd; 
+	
+	//messages from the tiled devices are routed back to the front end through this queue.
+	//Just one queue .Sorting is done in the front end.
 	private final ArrayBlockingQueue<TiledMessage> sharedQueueRev; // Playing with thread
 	// unsafe versions
 	// here...maybe fix
@@ -29,11 +35,13 @@ public class Scanner implements Runnable {
 	// structure and
 	// minimal change
 	private final LinkedList<TileIndex> index;
+	
+	//Range of IP Addresses that the scanner takes. 
 	InetAddress startip;
 	InetAddress endip;
 
-	// LinkedList<Thread> threads =new LinkedList<Thread>();
-
+	
+	//Constructor to initialise the queues and ip range.
 	Scanner(String start, String end, LinkedList<ArrayBlockingQueue<TiledMessage>> queueFwd,ArrayBlockingQueue<TiledMessage> queueRev,
 			LinkedList<TileIndex> index) throws UnknownHostException {
 		this.index = index;
@@ -42,7 +50,8 @@ public class Scanner implements Runnable {
 		startip = InetAddress.getByName(start);
 		endip = InetAddress.getByName(end);
 	}
-
+	
+	//Constructor using a default IP Range.
 	Scanner(LinkedList<ArrayBlockingQueue<TiledMessage>> queueFwd,ArrayBlockingQueue<TiledMessage> queueRev, LinkedList<TileIndex> index)
 			throws UnknownHostException {
 		this.sharedQueueFwd = queueFwd;
@@ -177,7 +186,7 @@ public class Scanner implements Runnable {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				System.out.println("who teh fuck interrupted my sleep yo!");
+				System.out.println("Scanner Thread Sleep Interrupted.");
 				e.printStackTrace();
 			}
 		}

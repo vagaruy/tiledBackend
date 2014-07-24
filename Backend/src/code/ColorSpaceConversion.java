@@ -1,5 +1,13 @@
 package code;
 
+/*
+ * This class performs the color space conversion.
+ * The Values are converted from RGB to RGBW depending on the saturation.
+ * A method for conversion with color correction is also provided.
+ * Doesnt affect the amber value of the tiled device which is far more complicated to include in the equation!
+ * Methods are mostly self explanatory!
+*/
+
 public class ColorSpaceConversion {
 
 
@@ -31,7 +39,7 @@ public class ColorSpaceConversion {
 	    return (255 - saturation(rgbw)) / 255 * (rgbw.red + rgbw.green + rgbw.blue) / 3;
 	 }
 	 
-	// Example function.
+	// Conversion function
 	colorRgbw rgbToRgbw( int red, int green,  int blue) {
 	    colorRgbw rgbw = new colorRgbw();
 	    rgbw.red=red;
@@ -41,7 +49,7 @@ public class ColorSpaceConversion {
 	    return rgbw;
 	}
 	 
-	// Example function with color correction.
+	// Conversion function with color correction.
 	colorRgbw rgbToRgbw( int red, int redMax,
 	                     int green,  int greenMax,
 	                     int blue,  int blueMax) {

@@ -1,5 +1,7 @@
 package code;
 import static org.bytedeco.javacpp.opencv_core.*;
+
+//THis calls uses javacv to capture images from the webcam and set the RGBW values of the Tiled Device using colorspace conversion.
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.bytedeco.javacv.*;
@@ -24,10 +26,10 @@ public class webcam implements Runnable {
 			IplImage img;//=cvLoadImage("C:\\Users\\Testing\\Desktop\\image.jpg");
 			// while (true) {
 			img = grabber.grab();
-			System.out.println("I am here atleast");
+			System.out.println("image grabbed");
 
 
-			System.out.println("Saving the iamge");
+			//System.out.println("Saving the iamge");
 			//cvFlip(img, img, 1);// l-r = 90_degrees_steps_anti_clockwise
 			//cvSaveImage("C:\\Users\\Testing\\Desktop\\imag1e.jpg", img);
 			// show image on window
@@ -49,6 +51,8 @@ public class webcam implements Runnable {
 			send_msg(color.red,color.green,color.blue,color.white);
 
 		} catch (Exception e) {
+			System.out.println("No connected webcam can be found!Sorry!");
+			e.printStackTrace();
 		}
 	}
 
