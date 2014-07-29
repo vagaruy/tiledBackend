@@ -1,10 +1,13 @@
 package code;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,6 +22,7 @@ public class SorterIncoming implements Runnable {
 	private AtomicBoolean flag;
 	Optitrack tracker;
 	Thread track;
+	private static int sleepTimeout;
 	
 
 	public SorterIncoming(AtomicBoolean flag,Socket sock,ObjectInputStream inStream, LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue, LinkedList<TileIndex> index) {
@@ -28,8 +32,24 @@ public class SorterIncoming implements Runnable {
 		this.index=index;
 		this.sock=sock;	
 		this.flag=flag;
-		
-		
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("config.prop");
+			// load a properties file
+			prop.load(input);
+			sleepTimeout=Integer.parseInt(prop.getProperty("Frontend->Backend Sorter Sleeptime"));
+			} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private void sort(TiledMessage tile) {
@@ -146,7 +166,7 @@ public class SorterIncoming implements Runnable {
 		try{
 			while(true){
 				recv_msg();
-				Thread.sleep(500);
+				Thread.sleep(sleepTimeout);
 			}
 		}catch(InterruptedException ex)
 		{

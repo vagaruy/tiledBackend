@@ -1,23 +1,50 @@
 package code;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.util.Properties;
 
 
 public class SocketConnection {
 	private Socket socket;
 	private InetAddress ip;
 	private int port;
+	private static int sockTimeout;
+	private static int sockRecvTimeout;
 	
 	SocketConnection(InetAddress addr,int conport) throws IOException 
 	{
 		ip=addr;
 		port=conport;
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("config.prop");
+			// load a properties file
+			prop.load(input);
+			sockTimeout=Integer.parseInt(prop.getProperty("Socket Connections Timeout"));
+			sockRecvTimeout=Integer.parseInt(prop.getProperty("Socket Recieve Waittime"));
+			
+			
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 			
 	}
 	
@@ -26,7 +53,7 @@ public class SocketConnection {
 		try {
 			socket=new Socket();
 			SocketAddress sockaddr=new InetSocketAddress(ip,port);
-			socket.connect(sockaddr,3000);
+			socket.connect(sockaddr,sockTimeout);
 			} catch (SocketException e) {
 				return 0;
 			} catch (IOException e) {
@@ -70,7 +97,7 @@ public class SocketConnection {
 		byte rmesg[]=new byte[50];
 		//System.out.println("Ip address is "+ip);
 		write(msg,out);
-		Thread.sleep(30);
+		Thread.sleep(sockRecvTimeout);
 		rmesg=read(in);
 		return rmesg;						
 	}

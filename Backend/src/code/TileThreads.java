@@ -1,8 +1,12 @@
 package code;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class TileThreads implements Runnable {
@@ -15,6 +19,8 @@ public class TileThreads implements Runnable {
 	private final LinkedList<TileIndex> index;
 	private final byte SerialNo;
 	private final InetAddress ipAddress;
+	private int tilePort;
+	private int sleepTime;
 	private int failcount = 0;
 
 	TileThreads(LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueueFwd,
@@ -29,6 +35,26 @@ public class TileThreads implements Runnable {
 		this.index = index;
 		System.out.println("Spawned a new thread with Serial No" + SerialNo
 				+ " Ip " + ipAddress.toString());
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("config.prop");
+			// load a properties file
+			prop.load(input);
+			tilePort=Integer.parseInt(prop.getProperty("Tiles Port Number"));
+			sleepTime=Integer.parseInt(prop.getProperty("Tile Sleep Time"));
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private void destroy() {
@@ -73,14 +99,14 @@ public class TileThreads implements Runnable {
 				scan_doa();
 				
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(sleepTime);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				get_status();
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(sleepTime);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -142,7 +168,7 @@ public class TileThreads implements Runnable {
 
 		// TODO Auto-generated method stub
 		try {
-			sock = new SocketConnection(ipAddress, 8080);
+			sock = new SocketConnection(ipAddress, tilePort);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("Tile Thread to arduino connection problem");
@@ -177,9 +203,6 @@ public class TileThreads implements Runnable {
 		
 	}
 		
-
-
-
 	/*
 	 * try { while(sock.isConnected()==1) {
 	 * 
@@ -226,33 +249,24 @@ public class TileThreads implements Runnable {
 						e.printStackTrace();
 					}
 				}
-				
-				
 			}
-			
-			
 			MessageGenerator msg = new MessageGenerator(tile);
-			
 			byte message[] = msg.getMessage();
-
 			// TODO Auto-generated method stub
 			try {
 				if ((sock != null) && (sock.isConnected() == 1)) {
 					byte[] msgrcv=sock.snd_recv(message);
-					
 					System.out.println("Recieved message is "+msgrcv);
 					if(msgrcv!=null){
-						
-					
 					MessageDecoder msgd=new MessageDecoder(msgrcv);
 					if(msgd.message_decode()==1)
 					{
-					TiledMessage tile1=msgd.getTile();
-					//only send back the status messages...just ignore the rest for time being lol
-					if(tile1.getMessagetype()==10)
-					{
-						sharedQueueRev.add(tile1);
-					}
+						TiledMessage tile1=msgd.getTile();
+						//only send back the status messages...just ignore the rest for time being lol
+						if(tile1.getMessagetype()==10)
+						{
+							sharedQueueRev.add(tile1);
+						}
 					}
 					System.out.println("Send success..recieved a legit message back");
 					}

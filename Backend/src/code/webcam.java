@@ -92,12 +92,14 @@ public class webcam implements Runnable {
 
 	}
 
-	/*public static void main(String args[])
-{
-	webcam cam=new webcam();
-	Thread sort = new Thread(cam);
-	sort.start();
-}*/
+/*
+ * public static void main(String args[])
+*{
+*	webcam cam=new webcam();
+*	Thread sort = new Thread(cam);
+*	sort.start();
+}
+*/
 }
 
 

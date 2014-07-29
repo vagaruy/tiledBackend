@@ -1,8 +1,11 @@
 package code;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 
 
@@ -12,6 +15,7 @@ public class SorterOutgoing implements Runnable {
 	private final ObjectOutputStream outStream;
 	private final ArrayBlockingQueue<TiledMessage> sharedQueueRev;
 	private Socket sock;
+	private static int sleepTimeout;
 	
 
 	public SorterOutgoing(Socket sock,ObjectOutputStream outStream,
@@ -21,6 +25,24 @@ public class SorterOutgoing implements Runnable {
 		this.outStream=outStream;
 		this.sharedQueueRev=sharedQueueRev;
 		this.sock=sock;
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("config.prop");
+			// load a properties file
+			prop.load(input);
+			sleepTimeout=Integer.parseInt(prop.getProperty("Backend->Frontend Sorter Sleeptime"));
+			} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public void send_msg()
@@ -61,7 +83,7 @@ public class SorterOutgoing implements Runnable {
 		try{
 			while(true){
 				send_msg();
-				Thread.sleep(100);
+				Thread.sleep(sleepTimeout);
 			}
 		}catch(InterruptedException ex)
 		{

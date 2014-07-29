@@ -2,12 +2,15 @@ package code;
 
 //This is where all the incoming messages are routed to specific queues...acts as a producer of sorts I guess..
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +28,7 @@ public class Sorter implements Runnable {
 	private final ArrayBlockingQueue<TiledMessage> sharedQueueRev;
 	private final LinkedList<TileIndex> index;
 	private AtomicBoolean flag;
+	private static int sortTimeout;
 
 	Sorter(LinkedList<ArrayBlockingQueue<TiledMessage>> sharedQueue,ArrayBlockingQueue<TiledMessage> sharedQueueRev, LinkedList<TileIndex> index,
 			int port) {
@@ -36,6 +40,28 @@ public class Sorter implements Runnable {
 		flag.set(true);
 		incThread=null;
 		outThread=null;
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("config.prop");
+			// load a properties file
+			prop.load(input);
+			sortTimeout=Integer.parseInt(prop.getProperty("Sorter Connection Fail Sleeptime"));
+			
+			
+			
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 }
 
 	private void frontend_sort() {
@@ -119,7 +145,7 @@ public class Sorter implements Runnable {
 				System.out.println("Socket connection failed in front end check....");*/
 			//}else
 				try {
-					Thread.sleep(4000);
+					Thread.sleep(sortTimeout);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					System.out.println("Sorter disturbed not cool bro!");
