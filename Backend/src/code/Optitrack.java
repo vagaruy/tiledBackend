@@ -409,7 +409,7 @@ public class Optitrack implements Runnable {
 						&& (x[i] < tileCoords[j][1])
 						&& (z[i] > tileCoords[j][2])
 						&& (z[i] < tileCoords[j][3])) {
-					serial[i] = j;
+					serial[i] = j+1;
 					break;
 				}
 			}
